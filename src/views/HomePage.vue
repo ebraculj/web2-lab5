@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h1>Welcome to Task Manager</h1>
+    <h1>Dobrodošli u TaskIt</h1>
     <TaskList />
-    <router-link to="/about">Go to About Page</router-link>
+    <router-link to="/about">O aplikaciji</router-link>
   </div>
 </template>
 

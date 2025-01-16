@@ -1,20 +1,20 @@
 <template>
   <div class="task-list">
-    <h2>Task List (Total: {{ tasks.length }})</h2>
+    <h2>Popis zadataka: (Ukupno: {{ tasks.length }})</h2>
 
     <form @submit.prevent="addTask">
       <input
         type="text"
         v-model="newTaskTitle"
-        placeholder="Enter new task"
+        placeholder="Unesi novi zadatak"
         required
       />
       <select v-model="newTaskStatus">
-        <option value="pending">Pending</option>
-        <option value="in progress">In Progress</option>
-        <option value="completed">Completed</option>
+        <option value="na čekanju">Na čekanju</option>
+        <option value="u tijeku">U tijeku</option>
+        <option value="završeno">Završeno</option>
       </select>
-      <button type="submit">Add Task</button>
+      <button type="submit">Dodaj zadatak</button>
     </form>
 
     <!-- Filter Options -->
@@ -22,34 +22,34 @@
       <label>
         <input
           type="radio"
-          value="all"
+          value="sve"
           v-model="filter"
         />
-        All
+        Sve
       </label>
       <label>
         <input
           type="radio"
-          value="pending"
+          value="na čekanju"
           v-model="filter"
         />
-        Pending
+        Na čekanju
       </label>
       <label>
         <input
           type="radio"
-          value="in progress"
+          value="u tijeku"
           v-model="filter"
         />
-        In Progress
+        U tijeku
       </label>
       <label>
         <input
           type="radio"
-          value="completed"
+          value="završeno"
           v-model="filter"
         />
-        Completed
+        Završeno
       </label>
     </div>
 
@@ -75,18 +75,18 @@ export default {
   data() {
     return {
       tasks: [
-        { id: 1, title: 'Learn Vue.js', status: 'pending' },
-        { id: 2, title: 'Complete the project', status: 'in progress' },
-        { id: 3, title: 'Review the code', status: 'completed' },
+        { id: 1, title: 'Predati projekt', status: 'na čekanju' },
+        { id: 2, title: 'Izraditi prezentaciju', status: 'u tijeku' },
+        { id: 3, title: 'Odnijeti odijelo na kemijsko čišćenje', status: 'završeno' },
       ],
       newTaskTitle: '',
-      newTaskStatus: 'pending',
-      filter: 'all', // Filter status
+      newTaskStatus: 'na čekanju',
+      filter: 'sve', // Filter status
     };
   },
   computed: {
     filteredTasks() {
-      if (this.filter === 'all') {
+      if (this.filter === 'sve') {
         return this.tasks;
       }
       return this.tasks.filter((task) => task.status === this.filter);
@@ -101,17 +101,17 @@ export default {
       };
       this.tasks.push(newTask);
       this.newTaskTitle = '';
-      this.newTaskStatus = 'pending';
+      this.newTaskStatus = 'na čekanju';
     },
     toggleTaskStatus(taskId) {
       const task = this.tasks.find((t) => t.id === taskId);
       if (task) {
         task.status =
-          task.status === 'pending'
-            ? 'in progress'
-            : task.status === 'in progress'
-            ? 'completed'
-            : 'pending';
+          task.status === 'na čekanju'
+            ? 'u tijeku'
+            : task.status === 'u tijeku'
+            ? 'završeno'
+            : 'na čekanju';
       }
     },
   },
