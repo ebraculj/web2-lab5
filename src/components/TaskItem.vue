@@ -1,7 +1,6 @@
 <template>
   <li class="task-item" @click="$emit('toggle-status', task.id)">
-    <span>{{ task.title }}</span>
-    <small>({{ task.status }})</small>
+    <span>{{ task.title }} ({{ task.status }})</span>
   </li>
 </template>
 
