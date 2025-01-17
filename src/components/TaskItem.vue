@@ -1,12 +1,17 @@
 <template>
-  <li class="task-item" @click="$emit('toggle-status', task.id)">
-    <span>{{ task.title }} ({{ task.status }})</span>
+  <li>
+    <span :style="{ textDecoration: task.status === 'završeno' ? 'line-through' : 'none' }">
+      {{ task.title }} ({{ task.status }})
+    </span>
+    <button @click="$emit('toggle-status', task.id)">
+      {{ task.status === "na čekanju" ? "Označi kao u tijeku" : task.status === "u tijeku" ? "Označi kao završeno" : "Označi kao na čekanju" }}
+    </button>
   </li>
 </template>
 
 <script>
 export default {
-  name: 'TaskItem',
+  name: "TaskItem",
   props: {
     task: {
       type: Object,
@@ -17,12 +22,24 @@ export default {
 </script>
 
 <style scoped>
-.task-item {
-  list-style: none;
-  padding: 5px 0;
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+}
+
+button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
   cursor: pointer;
 }
-.task-item:hover {
-  text-decoration: underline;
+
+button:hover {
+  background-color: #c0392b;
 }
 </style>
