@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomePage from '@/views/HomePage.vue';
-import AboutPage from '@/views/AboutPage.vue';
-import NotFoundPage from '@/views/NotFoundPage.vue';
+
+const HomePage = () => import('@/views/HomePage.vue');
+const AboutPage = () => import('@/views/AboutPage.vue');
+const NotFoundPage = () => import('@/views/NotFoundPage.vue');
+
 
 const routes = [
   {
@@ -15,7 +17,7 @@ const routes = [
     component: AboutPage,
   },
   {
-    path: '/:pathMatch(.*)*', // Catch-all route
+    path: '/:catchAll(.*)', // Catch-all route
     name: 'NotFound',
     component: NotFoundPage,
   },

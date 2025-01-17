@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Task List</h1>
-    <div v-if="tasks.length === 0">Učitavanje zadataka...</div>
+    <div v-if="isLoading">Učitavanje zadataka...</div>
     <ul v-else>
       <TaskItem
         v-for="task in filteredTasks"
@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import { computed, ref } from "vue";
+import { useTaskStore } from "@/store/taskStore";
 import TaskItem from "./TaskItem.vue";
 
 export default {
@@ -36,56 +38,52 @@ export default {
   components: {
     TaskItem,
   },
-  data() {
-    return {
-      tasks: [], // Inicijalna prazna lista zadataka
-      newTaskTitle: "",
-      newTaskStatus: "na čekanju", // Zadani status
-      filter: "all", // Zadani filter
+  setup() {
+    const taskStore = useTaskStore();
+    const newTaskTitle = ref("");
+    const newTaskStatus = ref("na čekanju");
+    const filter = ref("all");
+    const isLoading = ref(true);
+
+    // Dohvati zadatke kad se komponenta montira
+    taskStore.fetchTasks().finally(() => {
+      isLoading.value = false;
+    });
+
+    // Filtrirani zadaci
+    const filteredTasks = computed(() => {
+      if (filter.value === "all") return taskStore.tasks;
+      return taskStore.tasks.filter((task) => task.status === filter.value);
+    });
+
+    // Dodaj novi zadatak
+    const addTask = () => {
+      if (newTaskTitle.value.trim() !== "") {
+        const task = {
+          id: Date.now(),
+          title: newTaskTitle.value,
+          status: newTaskStatus.value,
+        };
+        taskStore.addTask(task);
+        newTaskTitle.value = "";
+        newTaskStatus.value = "na čekanju";
+      }
     };
-  },
-  computed: {
-    filteredTasks() {
-      if (this.filter === "all") return this.tasks;
-      return this.tasks.filter((task) => task.status === this.filter);
-    },
-  },
-  methods: {
-    addTask() {
-      // Dodavanje novog zadatka
-      if (this.newTaskTitle.trim() !== "") {
-        this.tasks.push({
-          id: Date.now(), // Jedinstveni ID
-          title: this.newTaskTitle,
-          status: this.newTaskStatus,
-        });
-        this.newTaskTitle = ""; // Reset inputa
-        this.newTaskStatus = "na čekanju"; // Reset statusa
-      }
-    },
-    toggleTaskStatus(taskId) {
-      // Promjena statusa zadatka
-      const task = this.tasks.find((t) => t.id === taskId);
-      if (task) {
-        if (task.status === "na čekanju") {
-          task.status = "u tijeku";
-        } else if (task.status === "u tijeku") {
-          task.status = "završeno";
-        } else {
-          task.status = "na čekanju";
-        }
-      }
-    },
-  },
-  mounted() {
-    // Mock dohvat podataka nakon 1 sekunde
-    setTimeout(() => {
-      this.tasks = [
-        { id: 1, title: "Predati projekt", status: "na čekanju" },
-        { id: 2, title: "Obnoviti putovnicu", status: "u tijeku" },
-        { id: 3, title: "Odnijeti odijelo na kemijsko čišćenje", status: "završeno" },
-      ];
-    }, 1000);
+
+    // Promjena statusa zadatka
+    const toggleTaskStatus = (taskId) => {
+      taskStore.toggleTaskStatus(taskId);
+    };
+
+    return {
+      newTaskTitle,
+      newTaskStatus,
+      filter,
+      isLoading,
+      filteredTasks,
+      addTask,
+      toggleTaskStatus,
+    };
   },
 };
 </script>
