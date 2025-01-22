@@ -1,33 +1,41 @@
 import { defineStore } from "pinia";
+import { db } from "@/firebase";
+import { collection, getDocs, addDoc, updateDoc, doc } from "firebase/firestore";
 
 export const useTaskStore = defineStore("taskStore", {
   state: () => ({
     tasks: [],
-  }),
+  }),  
   actions: {
-    addTask(task) {
-      this.tasks.push(task);
-    },
-    toggleTaskStatus(taskId) {
-      const task = this.tasks.find((t) => t.id === taskId);
-      if (task) {
-        if (task.status === "na čekanju") {
-          task.status = "u tijeku";
-        } else if (task.status === "u tijeku") {
-          task.status = "završeno";
-        } else {
-          task.status = "na čekanju";
-        }
+    async fetchTasks() {
+      try {
+        const taskCollection = collection(db, "tasks");
+        const taskSnapshot = await getDocs(taskCollection);
+        this.tasks = taskSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+      } catch (error) {
+        console.error("Greška prilikom dohvaćanja zadataka:", error);
       }
     },
-    async fetchTasks() {
-      if (this.tasks.length === 0) {
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulacija kašnjenja
-        this.tasks = [
-          { id: 1, title: "Predati projekt", status: "na čekanju" },
-          { id: 2, title: "Obnoviti putovnicu", status: "u tijeku" },
-          { id: 3, title: "Odnijeti odijelo na kemijsko čišćenje", status: "završeno" },
-        ];
+    async addTask(task) {
+      try {
+        const taskCollection = collection(db, "tasks");
+        const docRef = await addDoc(taskCollection, task);
+        this.tasks.push({ id: docRef.id, ...task });
+      } catch (error) {
+        console.error("Greška prilikom dodavanja zadatka:", error);
+      }
+    },
+    async updateTaskStatus(taskId, newStatus) {
+      try {
+        const taskDoc = doc(db, "tasks", taskId);
+        await updateDoc(taskDoc, { status: newStatus });
+        const task = this.tasks.find((t) => t.id === taskId);
+        if (task) task.status = newStatus;
+      } catch (error) {
+        console.error("Greška prilikom ažuriranja statusa zadatka:", error);
       }
     },
   },

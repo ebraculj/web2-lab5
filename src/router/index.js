@@ -6,10 +6,10 @@ const NotFoundPage = () => import("../views/NotFoundPage.vue");
 
 const routes = [
   { path: "/", component: HomePage },
-  { path: "/about", component: AboutPage },
+  { path: "/about", component: AboutPage},
   { path: "/:pathMatch(.*)*", component: NotFoundPage },
 ];
-
+ 
 const router = createRouter({
   history: createWebHistory(),
   routes,
