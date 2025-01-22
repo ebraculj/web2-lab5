@@ -5,7 +5,7 @@
     <div v-if="isLoading">Učitavanje zadataka...</div>
     <!-- Prikaz zadataka -->
     <ul v-else>
-      <li v-for="task in taskStore.tasks" :key="task.id">
+      <li v-for="task in filteredTasks" :key="task.id">
         <span :style="{ textDecoration: task.status === 'završeno' ? 'line-through' : 'none' }">
           {{ task.title }} ({{ task.status }})
         </span>
@@ -14,6 +14,13 @@
         <button @click="updateTaskStatus(task.id, 'završeno')">Završeno</button>
       </li>
     </ul>
+    <!-- Gumbi za filtriranje -->
+    <div>
+      <button @click="filter = 'all'">Svi</button>
+      <button @click="filter = 'na čekanju'">Na čekanju</button>
+      <button @click="filter = 'u tijeku'">U tijeku</button>
+      <button @click="filter = 'završeno'">Završeno</button>
+    </div>
     <!-- Forma za dodavanje novog zadatka -->
     <form @submit.prevent="addTask">
       <input v-model="newTaskTitle" placeholder="Unesi naziv zadatka" />
@@ -28,7 +35,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useTaskStore } from "../store/taskStore";
 
 export default {
@@ -38,6 +45,7 @@ export default {
     const newTaskTitle = ref(""); // Naslov novog zadatka
     const newTaskStatus = ref("na čekanju"); // Status novog zadatka
     const isLoading = ref(true); // Indikator učitavanja podataka
+    const filter = ref("all"); // Filtriranje zadataka (svi, na čekanju, u tijeku, završeno)
 
     // Dohvat zadataka iz Firestorea
     onMounted(async () => {
@@ -62,6 +70,12 @@ export default {
       await taskStore.updateTaskStatus(taskId, newStatus);
     };
 
+    // Computed property za filtriranje zadataka
+    const filteredTasks = computed(() => {
+      if (filter.value === "all") return taskStore.tasks;
+      return taskStore.tasks.filter((task) => task.status === filter.value);
+    });
+
     return {
       taskStore,
       newTaskTitle,
@@ -69,6 +83,8 @@ export default {
       isLoading,
       addTask,
       updateTaskStatus,
+      filteredTasks,
+      filter,
     };
   },
 };
