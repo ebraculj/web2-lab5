@@ -26,7 +26,6 @@ export default {
   padding: 20px;
   font-family: Arial, sans-serif;
 }
-
 .homepage-title {
   font-size: 36px; 
   font-weight: bold;

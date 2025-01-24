@@ -32,12 +32,4 @@ export default {
   margin: 0 15px; 
   transition: color 0.3s;
 }
-
-.nav-link:hover {
-  color: #f1c40f; 
-}
-
-.nav-link.router-link-active {
-  border-bottom: 2px solid #f1c40f;
-}
 </style>
